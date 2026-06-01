@@ -139,47 +139,14 @@ let
         done
       done
 
-      # Dispatcher: basename(argv[0]) → <tool>_main. The canonical name (flac)
-      # and any unknown argv[0] fall through to a `<bin> <applet> …` form and
-      # finally to flac_main, so the bare `flac` dispatcher stays callable (its
-      # `--version` smoke reaches flac_main) and survives a rename (CI smoke
-      # copies it to smoke.exe).
-      {
-        echo '#include <string.h>'
-        for t in $TOOLS; do echo "int ''${t}_main(int, char **);"; done
-        echo 'struct ap { const char *n; int (*f)(int, char **); };'
-        echo 'static const struct ap aps[] = {'
-        for t in $TOOLS; do echo "    {\"$t\", ''${t}_main},"; done
-        cat <<'CBODY'
-    {0, 0}
-};
-static void base_of(char *d, size_t cap, const char *s) {
-    const char *p = s, *x;
-    x = strrchr(p, '/'); if (x) p = x + 1;
-#ifdef _WIN32
-    x = strrchr(p, '\\'); if (x) p = x + 1;
-#endif
-    size_t n = strlen(p); if (n >= cap) n = cap - 1;
-    memcpy(d, p, n); d[n] = 0;
-    if (n > 4 && strcmp(d + n - 4, ".exe") == 0) d[n - 4] = 0;
-}
-int main(int argc, char **argv) {
-    char b[64];
-    const char *a0 = (argc > 0 && argv[0]) ? argv[0] : "flac";
-    base_of(b, sizeof b, a0);
-    for (const struct ap *a = aps; a->n; a++)
-        if (strcmp(b, a->n) == 0) return a->f(argc, argv);
-    /* canonical/unknown argv[0]: allow `flac <applet> [args]`, else flac. */
-    if (argc >= 2) {
-        char c[64]; base_of(c, sizeof c, argv[1]);
-        for (const struct ap *a = aps; a->n; a++)
-            if (strcmp(c, a->n) == 0) return a->f(argc - 1, argv + 1);
-    }
-    return flac_main(argc, argv);
-}
-CBODY
-      } > mc/dispatcher.c
-      $CC -O2 -c -o mc/dispatcher.o mc/dispatcher.c
+      # Dispatcher (shared canonical generator — see nix-lib
+      # lib.multicallDispatcherC). Applet list from multicall/apps.list ($TOOLS);
+      # a bare/unknown invocation runs flac (defaultApplet) so the `flac
+      # --version` smoke reaches flac_main and a renamed copy still dispatches.
+      mkdir -p multicall
+      printf '%s\n' $TOOLS > multicall/apps.list
+${lib.multicallDispatcherC { name = "flac"; defaultApplet = "flac"; }}
+      $CC -O2 -c -o multicall/dispatcher.o multicall/dispatcher.c
 
       # Final link: shared archives, once. On GNU-ld targets wrap them in a group
       # to absorb back-references; ld64 (darwin) rejects --start-group but
@@ -197,7 +164,7 @@ CBODY
       MCF=""
       ${lib.optionalString isWindows ''MCF="-static"''}
       $CC -O2 \
-        $MCOBJS mc/dispatcher.o \
+        $MCOBJS multicall/dispatcher.o \
         $GO $LIBS $GC -lm $MCF \
         -o mc/flac
       [ -f mc/flac ] || mv mc/flac.exe mc/flac

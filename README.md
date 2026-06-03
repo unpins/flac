@@ -19,18 +19,19 @@ One binary provides both flac CLIs:
 | `flac`     | encode / decode FLAC (and Ogg FLAC) audio     |
 | `metaflac` | view and edit FLAC metadata, tags and pictures |
 
-## Installation
+## Usage
 
-Install with [unpin](https://github.com/unpins/unpin):
+Run the `flac` program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin flac
+unpin flac song.wav        # encode WAV -> song.flac
+unpin flac -d song.flac    # decode -> song.wav
 ```
 
-Or run without installing:
+To install it onto your PATH:
 
 ```bash
-unpin run flac -- song.wav
+unpin install flac
 ```
 
 ## Build locally

@@ -10,15 +10,6 @@ reference encoder/decoder and metadata editor for the FLAC lossless audio codec.
 
 Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
 
-## Tools
-
-One binary provides both flac CLIs:
-
-| command    | what it does                                  |
-| ---------- | --------------------------------------------- |
-| `flac`     | encode / decode FLAC (and Ogg FLAC) audio     |
-| `metaflac` | view and edit FLAC metadata, tags and pictures |
-
 ## Usage
 
 Run the `flac` program with [unpin](https://github.com/unpins/unpin):
@@ -33,6 +24,15 @@ To install it onto your PATH:
 ```bash
 unpin install flac
 ```
+
+## Programs
+
+One binary provides both flac CLIs:
+
+| command    | what it does                                  |
+| ---------- | --------------------------------------------- |
+| `flac`     | encode / decode FLAC (and Ogg FLAC) audio     |
+| `metaflac` | view and edit FLAC metadata, tags and pictures |
 
 ## Build locally
 

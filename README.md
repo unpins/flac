@@ -1,6 +1,6 @@
 # flac
 
-Standalone build of the [flac](https://xiph.org/flac/) command-line tools — the
+Standalone build of the [flac](https://xiph.org/flac/) command-line programs — the
 reference encoder/decoder and metadata editor for the FLAC lossless audio codec.
 
 [![CI](https://github.com/unpins/flac/actions/workflows/flac.yml/badge.svg)](https://github.com/unpins/flac/actions)
@@ -26,8 +26,6 @@ unpin install flac
 ```
 
 ## Programs
-
-One binary provides both flac CLIs:
 
 | command    | what it does                                  |
 | ---------- | --------------------------------------------- |

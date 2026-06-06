@@ -25,12 +25,7 @@ To install it onto your PATH:
 unpin install flac
 ```
 
-## Programs
-
-| command    | what it does                                  |
-| ---------- | --------------------------------------------- |
-| `flac`     | encode / decode FLAC (and Ogg FLAC) audio     |
-| `metaflac` | view and edit FLAC metadata, tags and pictures |
+`unpin install flac` also creates the `metaflac` command, which views and edits FLAC metadata, tags and pictures.
 
 ## Build locally
 

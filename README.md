@@ -1,14 +1,15 @@
 # flac
 
-Standalone build of the [flac](https://xiph.org/flac/) command-line programs — the
-reference encoder/decoder and metadata editor for the FLAC lossless audio codec.
+The [flac](https://xiph.org/flac/) command-line programs — the reference
+encoder/decoder and metadata editor for the FLAC lossless audio codec. A single
+self-contained binary, built natively for Linux, macOS, and Windows.
 
 [![CI](https://github.com/unpins/flac/actions/workflows/flac.yml/badge.svg)](https://github.com/unpins/flac/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
 ![macOS](https://img.shields.io/badge/macOS-✓-success?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-✓-success?logo=windows&logoColor=white)
 
-Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
+Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](https://github.com/unpins/unpin): `unpin install flac`.
 
 ## Usage
 
@@ -26,6 +27,10 @@ unpin install flac
 ```
 
 `unpin install flac` also creates the `metaflac` command, which views and edits FLAC metadata, tags and pictures.
+
+## Man pages
+
+Both man pages are embedded — read them with `unpin man flac` and `unpin man flac metaflac`.
 
 ## Build locally
 
@@ -60,4 +65,3 @@ The [Releases](https://github.com/unpins/flac/releases) page has standalone bina
 - **Windows** is built with mingw: flac is portable CMake C with a single small
   dependency (libogg), so it cross-compiles cleanly and the runtime is folded
   static — the `.exe` has no companion DLLs.
-- Both upstream man pages (`flac.1`, `metaflac.1`) are embedded in the binary.

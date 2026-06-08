@@ -27,6 +27,9 @@
     ulib.mkStandaloneFlake {
       inherit self;
       name = "flac";
+      # the flac/metaflac CLI tools are GPL-2.0-or-later; libFLAC (BSD) is linked
+      # in but the shipped programs are GPL.
+      license = "GPL-2.0-or-later";
       smoke = [ "--version" ];
       smokePattern = "flac 1\\.5";
       build = pkgs:

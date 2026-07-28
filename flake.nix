@@ -32,9 +32,16 @@
       license = "GPL-2.0-or-later";
       smoke = [ "--version" ];
       smokePattern = "flac 1\\.5";
-      build = pkgs:
-        import ./multicall.nix { lib = pkgs.lib // ulib; }
-          { inherit pkgs; flac = pkgs.pkgsStatic.flac; };
+
+      # Build via the unpin-llvm engine + emit a bitcode multicall module. The
+      # standalone ships flac + metaflac as separate binaries (like less); the
+      # single-binary fold is the mega's job. The old objcopy fold in
+      # ./multicall.nix can't run on the engine's -flto bitcode objects.
+      engine = "unpin-llvm";
+      multicall = {
+        programs = [{ name = "flac"; } { name = "metaflac"; }];
+      };
+      build = pkgs: pkgs.pkgsStatic.flac;
       windowsBuild = pkgs:
         import ./multicall.nix { lib = pkgs.lib // ulib; }
           { inherit pkgs; flac = (ulib.mingwStaticCross pkgs).flac; };

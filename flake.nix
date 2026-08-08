@@ -9,8 +9,8 @@
   inputs.unpins-lib.url = "github:unpins/nix-lib";
 
   # flac installs two CLIs — `flac` (encode/decode) and `metaflac` (metadata
-  # editor); ./multicall.nix post-links them into one `flac` dispatcher binary
-  # with `metaflac` as an argv[0]-dispatch UNPIN_META alias. Windows goes through
+  # editor); nix-lib folds them into one `flac` dispatcher binary with
+  # `metaflac` as an argv[0]-dispatch UNPIN_META alias. Windows goes through
   # mingw — flac is portable CMake C with a single small dependency (libogg), so
   # it cross-compiles cleanly (like brotli/libwebp); the runtime is folded static
   # in the multicall link so the .exe carries no companion DLLs.
@@ -33,17 +33,13 @@
       smoke = [ "--version" ];
       smokePattern = "flac 1\\.5";
 
-      # Build via the unpin-llvm engine + emit a bitcode multicall module. The
-      # standalone ships flac + metaflac as separate binaries (like less); the
-      # single-binary fold is the mega's job. The old objcopy fold in
-      # ./multicall.nix can't run on the engine's -flto bitcode objects.
+      # Every target self-folds flac + metaflac from the captured module.bc.
       engine = "unpin-llvm";
       multicall = {
+        windows = true;
         programs = [{ name = "flac"; } { name = "metaflac"; }];
       };
       build = pkgs: pkgs.pkgsStatic.flac;
-      windowsBuild = pkgs:
-        import ./multicall.nix { lib = pkgs.lib // ulib; }
-          { inherit pkgs; flac = (ulib.mingwStaticCross pkgs).flac; };
+      windowsBuild = pkgs: (ulib.mingwStaticCross pkgs).flac;
     };
 }

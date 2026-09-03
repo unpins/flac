@@ -39,7 +39,17 @@
         windows = true;
         programs = [{ name = "flac"; } { name = "metaflac"; }];
       };
-      build = pkgs: pkgs.pkgsStatic.flac;
+      # flac's suite already runs, and unlike most of the catalog it is a real
+      # one: test/Makefile.am wires check-local to test_flac.sh,
+      # test_metaflac.sh, test_libFLAC.sh and friends. nixpkgs sets doCheck and
+      # the native target is where `canExecute` allows it. Said here so it is
+      # this package's decision and not an inherited default that can flip
+      # under us; the drvPath is unchanged by saying it.
+      build = pkgs:
+        let base = pkgs.pkgsStatic.flac; in
+        base.overrideAttrs (_: {
+          doCheck = base.stdenv.buildPlatform.canExecute base.stdenv.hostPlatform;
+        });
       windowsBuild = pkgs: (ulib.mingwStaticCross pkgs).flac;
     };
 }

@@ -40,11 +40,13 @@
         programs = [{ name = "flac"; } { name = "metaflac"; }];
       };
       # flac's suite already runs, and unlike most of the catalog it is a real
-      # one: test/Makefile.am wires check-local to test_flac.sh,
-      # test_metaflac.sh, test_libFLAC.sh and friends. nixpkgs sets doCheck and
-      # the native target is where `canExecute` allows it. Said here so it is
-      # this package's decision and not an inherited default that can flip
-      # under us; the drvPath is unchanged by saying it.
+      # one: the build is CMake, and test/CMakeLists.txt registers ten ctest
+      # entries — the libFLAC and grabbag unit tests plus the test_flac.sh,
+      # test_metaflac.sh, test_streams.sh, test_seeking.sh, test_replaygain.sh
+      # and test_compression.sh shell suites. doCheck is what leaves
+      # BUILD_TESTING on, so turning it off would silently register none of
+      # them. Said here so it is this package's decision and not an inherited
+      # default that can flip under us; the drvPath is unchanged by saying it.
       build = pkgs:
         let base = pkgs.pkgsStatic.flac; in
         base.overrideAttrs (_: {

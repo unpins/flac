@@ -16,8 +16,9 @@ Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](http
 Run the `flac` program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin flac song.wav        # encode WAV -> song.flac
-unpin flac -d song.flac    # decode -> song.wav
+unpin flac song.wav             # encode WAV -> song.flac
+unpin flac -d song.flac         # decode -> song.wav
+unpin flac -c - < in.wav > out.flac   # or straight through a pipe
 ```
 
 To install it onto your PATH:
@@ -53,15 +54,8 @@ The [Releases](https://github.com/unpins/flac/releases) page has standalone bina
 
 ## Build notes
 
-- One multicall binary holds both tools. `flac` is the canonical name (a
-  busybox-style dispatcher); `metaflac` dispatches on `argv[0]`. The two tools
-  share the heavy static archives — libFLAC plus the internal getopt /
-  replaygain / utf8 helpers and external libogg — linked once, so the binary
-  carries a single copy of libFLAC.
-- The tools are folded together post-link by renaming each tool's `main` →
-  `<tool>_main` (and prefixing its other globals) with `objcopy`, then linking
-  the renamed objects against the shared archives; the exact archive list is
-  read from CMake's per-tool `link.txt`.
-- **Windows** is built with mingw: flac is portable CMake C with a single small
-  dependency (libogg), so it cross-compiles cleanly and the runtime is folded
-  static — the `.exe` has no companion DLLs.
+- Both tools live in one binary and share the code they have in common —
+  libFLAC, libogg and the internal helpers are in there once, not twice, which
+  is why the pair costs little more than `flac` alone.
+- **Windows:** a single `.exe`, no companion DLLs. Encoding and decoding
+  through a pipe is byte-for-byte the same as on Linux and macOS.

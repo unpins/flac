@@ -23,6 +23,20 @@
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
+      # metaflac puts stdout in _O_U8TEXT whenever it converts tags to UTF-8,
+      # which is the default; in that mode the narrow printf writes nothing.
+      # Every other line it prints goes through flac_printf (= printf_utf8 on
+      # Windows) — show_version() is the one that does not, so on Windows
+      # `metaflac --version` printed an empty line and exited 0. Applied on
+      # every platform so the source stays the same everywhere; off Windows
+      # flac_printf *is* printf, so only the .exe changes behaviour.
+      versionFix = drv: drv.overrideAttrs (oa: {
+        postPatch = (oa.postPatch or "") + ''
+          substituteInPlace src/metaflac/operations.c \
+            --replace-fail 'printf("metaflac %s\n", FLAC__VERSION_STRING);' \
+                           'flac_printf("metaflac %s\n", FLAC__VERSION_STRING);'
+        '';
+      });
     in
     ulib.mkStandaloneFlake {
       inherit self;
@@ -48,10 +62,10 @@
       # them. Said here so it is this package's decision and not an inherited
       # default that can flip under us; the drvPath is unchanged by saying it.
       build = pkgs:
-        let base = pkgs.pkgsStatic.flac; in
+        let base = versionFix pkgs.pkgsStatic.flac; in
         base.overrideAttrs (_: {
           doCheck = base.stdenv.buildPlatform.canExecute base.stdenv.hostPlatform;
         });
-      windowsBuild = pkgs: (ulib.mingwStaticCross pkgs).flac;
+      windowsBuild = pkgs: versionFix (ulib.mingwStaticCross pkgs).flac;
     };
 }

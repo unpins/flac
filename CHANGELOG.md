@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.5.0-2] - 2026-09-26
+
 ### Fixed
 
 - `metaflac --version` printed nothing on Windows and still exited 0. metaflac

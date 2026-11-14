@@ -1,0 +1,22 @@
+metaflac: print --version through flac_printf.
+
+metaflac puts stdout in _O_U8TEXT whenever it converts tags to UTF-8, which is
+the default; in that mode the narrow printf writes nothing. Every other line it
+prints goes through flac_printf (= printf_utf8 on Windows); show_version() did
+not, so on Windows `metaflac --version` printed an empty line and exited 0.
+Off Windows flac_printf is printf.
+
+Upstream xiph/flac 018b4ac (#812), after 1.5.0. Drop this patch when the flac
+release that carries it reaches nixpkgs.
+
+--- a/src/metaflac/operations.c
++++ b/src/metaflac/operations.c
+@@ -104,7 +104,7 @@
+ 
+ void show_version(void)
+ {
+-	printf("metaflac %s\n", FLAC__VERSION_STRING);
++	flac_printf("metaflac %s\n", FLAC__VERSION_STRING);
+ }
+ 
+ FLAC__bool do_major_operation(const CommandLineOptions *options)

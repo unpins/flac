@@ -23,19 +23,11 @@
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
-      # metaflac puts stdout in _O_U8TEXT whenever it converts tags to UTF-8,
-      # which is the default; in that mode the narrow printf writes nothing.
-      # Every other line it prints goes through flac_printf (= printf_utf8 on
-      # Windows) — show_version() is the one that does not, so on Windows
-      # `metaflac --version` printed an empty line and exited 0. Applied on
-      # every platform so the source stays the same everywhere; off Windows
-      # flac_printf *is* printf, so only the .exe changes behaviour.
+      # `metaflac --version` printed an empty line on Windows; the patch is
+      # upstream 018b4ac (#812), after 1.5.0 — drop it with the next flac
+      # release. Applied everywhere so the source is the same on every target.
       versionFix = drv: drv.overrideAttrs (oa: {
-        postPatch = (oa.postPatch or "") + ''
-          substituteInPlace src/metaflac/operations.c \
-            --replace-fail 'printf("metaflac %s\n", FLAC__VERSION_STRING);' \
-                           'flac_printf("metaflac %s\n", FLAC__VERSION_STRING);'
-        '';
+        patches = (oa.patches or [ ]) ++ [ ./patches/metaflac-version-utf8.patch ];
       });
     in
     ulib.mkStandaloneFlake {

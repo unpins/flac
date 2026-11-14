@@ -54,8 +54,8 @@ The [Releases](https://github.com/unpins/flac/releases) page has standalone bina
 
 ## Build notes
 
-- Both tools live in one binary and share the code they have in common —
+- Both programs live in one binary and share the code they have in common —
   libFLAC, libogg and the internal helpers are in there once, not twice, which
   is why the pair costs little more than `flac` alone.
-- **Windows:** a single `.exe`, no companion DLLs. Encoding and decoding
+- **Windows:** built with mingw-w64. Encoding and decoding
   through a pipe is byte-for-byte the same as on Linux and macOS.

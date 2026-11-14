@@ -1,5 +1,5 @@
 {
-  description = "the flac tools (FLAC lossless audio codec) as a single self-contained binary";
+  description = "the flac programs (FLAC lossless audio codec) as a single self-contained binary";
 
   nixConfig = {
     extra-substituters = [ "https://unpins.cachix.org" ];
